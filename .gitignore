@@ -1,7 +1,5 @@
 *.annot
-*.cmo
 *.cma
-*.cmi
 *.a
 *.o
 *.cmx
@@ -27,3 +25,7 @@ setup.log
 
 # Local OPAM switch
 _opam/
+
+# Emacs temp ocaml files
+*#*
+*~
