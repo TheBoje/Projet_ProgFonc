@@ -42,11 +42,33 @@ Note : x + y - x -> y n'est pas demandé comme opération de simplification
 
 *)
 
-(*string_to_token_list("1 2 +");;*)
+
+
+let token_to_binary_operator_stack(op, stack : operator * tree list) : tree list =
+  match stack with
+  | [] -> failwith "list is empty"
+  | v1::v2::tail -> (Binary(op, v2, v1))::tail
+;;
 
 let parse (input : token list) : tree =
-  (* TODO *)
+  let rec aux(tk_list, stack : token list * tree list) : tree =
+    match tk_list with
+    | [] -> failwith "No end point for the expression"
+    | hd::tail ->
+      match hd with
+      | End           -> List.hd(stack)
+      | Number(num)   -> aux(tail, Cst(num)::stack)
+      | Variable(var) -> aux(tail, Var(var)::stack)
+      | Minus         -> aux(tail, Unary(List.hd(stack))::(List.tl(stack))) (* Opérateur unaire -> la tête de liste est une constante ou variable donc on la remplace par un opérateur unaire sur la tête de la liste *)
+      | Add           -> aux(tail, token_to_binary_operator_stack(Plus, stack))
+      | Subtract     -> aux(tail, token_to_binary_operator_stack(Minus, stack))
+      | Multiply      -> aux(tail, token_to_binary_operator_stack(Mult, stack))
+      | Divide        -> aux(tail, token_to_binary_operator_stack(Div, stack))
+  in
+  aux(input, [])
 ;;
+
+parse(string_to_token_list("13 2 5 *  1 0 / - +;"));;
 
 let simplify (input : tree) : tree = 
   (* TODO *)
