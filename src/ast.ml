@@ -68,7 +68,7 @@ let parse (input : token list) : tree =
   aux(input, [])
 ;;
 
-parse(string_to_token_list("13 2 5 *  1 0 / - +;"));;
+let exp = parse(string_to_token_list("13 2 5 *  1 x / - +;"));;
 
 let rec eval(input : tree) : int =
   match input with
@@ -77,7 +77,7 @@ let rec eval(input : tree) : int =
   | Binary(Mult, left, right) -> eval(left) * eval(right)
   | Binary(Div, left, right) -> eval(left) / eval(right)
   | Cst(value) -> value
-  | Unary(tree) -> eval(tree)
+  | Unary(tree) -> (-1)*eval(tree)
 ;;
 
 let rec are_same_tree(tree1, tree2 : tree * tree) : bool = 
@@ -89,33 +89,53 @@ let rec are_same_tree(tree1, tree2 : tree * tree) : bool =
   | _ -> false
 ;;
 
-let rec simplify (input : tree) : tree = 
+let rec is_cst_tree(input : tree) : bool =
   match input with
-  | Binary(Mult, left,  Cst 1)  -> simplify(left) (* x * 1 -> x *)
-  | Binary(Mult, Cst 1, right)  -> simplify(right) (* 1 * x -> x *)
-  | Binary(Plus, left, Cst 0)   -> simplify(left) (* x + 0 -> x *)
-  | Binary(Plus, Cst 0, right)  -> simplify(right) (* 0 + x -> x *)
-  | Binary(Mult, left, Cst 0)   -> Cst 0 (* x * 0 -> 0 *)
-  | Binary(Mult, Cst 0, right)  -> Cst 0 (* 0 * x -> 0 *)
-  | Binary(Minus, left, right)  -> (* x - x -> 0 *)
-      if (are_same_tree(left, right))
-      then (Cst 0)
-      else input
-  | Binary(Div, left, right)    -> (* x / x -> 1 *)
-      if (are_same_tree(left, right))
-      then (Cst 1)
-      else input
-  | Unary(tree)                 -> Unary(simplify(tree))
-  | Binary(_, Cst _, Cst _)     -> Cst(eval(input))
-  | _ -> input
+  | Var(_) -> false
+  | Cst(_) -> true
+  | Unary(tree) -> is_cst_tree(tree)
+  | Binary(_, left, right) -> is_cst_tree(left) && is_cst_tree(right)
 ;;
 
-let exp = parse(string_to_token_list("x x -;"));;
-let exp_x1 = parse(string_to_token_list("x;"));;
-let exp_x2 = parse(string_to_token_list("x;"));;
-are_same_tree(exp_x1, exp_x2);;
+let rec simplify (input : tree) : tree = 
+  if (is_cst_tree(input))
+  then (Cst(eval(input)))
+  else (
+    match input with
+    | Binary(Mult, left,  Cst 1)  -> simplify(left) (* x * 1 -> x *)
+    | Binary(Mult, Cst 1, right)  -> simplify(right) (* 1 * x -> x *)
+    | Binary(Plus, left, Cst 0)   -> simplify(left) (* x + 0 -> x *)
+    | Binary(Plus, Cst 0, right)  -> simplify(right) (* 0 + x -> x *)
+    | Binary(Mult, left, Cst 0)   -> Cst 0 (* x * 0 -> 0 *)
+    | Binary(Mult, Cst 0, right)  -> Cst 0 (* 0 * x -> 0 *)
+    | Binary(Minus, left, right) when are_same_tree(left, right) -> Cst 0(* x - x -> 0 *)
+    | Binary(Div, left, right) when are_same_tree(left, right) -> Cst 1 (* x / x -> 1 *)
+    | Unary(tree)                 -> Unary(simplify(tree))
+    | Binary(_, Cst _, Cst _)     -> Cst(eval(input))
+    | Binary(ope, left, right)      -> Binary(ope, simplify(left), simplify(right))
+    | _ -> input
+  )
+;; 
+
+let exp = parse(string_to_token_list("x 3 + 5 7 + + 3 4 * 1 3 + / /;"));;
 simplify(exp);;
 
 let print (input : tree) : unit =
-  (* TODO *)
+  let rec aux(input : tree) : string =
+    match input with
+    | Var(value) -> String.make 1 value
+    | Cst(value) -> string_of_int(value)
+    | Unary(tree) -> aux(tree)
+    | Binary(ope, left, right) -> 
+      match ope with  
+        | Plus -> String.concat "" [aux(left); "+"; aux(right)]
+        | Minus -> String.concat "" [aux(left); "-"; aux(right)]
+        | Mult -> String.concat "" ["("; aux(left); "*"; aux(right); ")"]
+        | Div -> String.concat "" ["("; aux(left); ")"; "/"; "("; aux(right); ")"]
+  in
+  print_string(aux(input))
 ;;
+
+
+print(exp);;
+print(simplify(exp));;
