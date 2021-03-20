@@ -27,9 +27,9 @@ let get_order_operator(ope : operator) : int =
   | Div -> 3
 ;;
 
-(* Si l'opérateur 1 est prioritaire ou égale par rapport à l'opérateur 2, alors on retourne vrai *)
+(* Si l'opérateur 1 est prioritaire par rapport à l'opérateur 2, alors on retourne vrai *)
 let operator_priority(ope1, ope2 : operator * operator) : bool =
-  (get_order_operator(ope1) >= get_order_operator(ope2))
+  (get_order_operator(ope1) > get_order_operator(ope2))
 ;;
 
 type tree = 
@@ -156,7 +156,7 @@ let print_2 (input : tree) : unit =
     | Cst(value)                -> string_of_int(value)
     | Unary(tree)               -> aux(tree)
     | Binary(ope, left, right)  ->
-      match (need_parenthesis(ope, left), need_parenthesis(right))
+      match (need_parenthesis(ope, left), need_parenthesis(ope, right)) with
       | (true, true)    -> String.concat "" ["("; aux(left); ")"; operator_to_string(ope); "("; aux(right); ")"]
       | (true, false)   -> String.concat "" ["("; aux(left); ")"; operator_to_string(ope); aux(right);]
       | (false, true)   -> String.concat "" [aux(left); operator_to_string(ope); "("; aux(right); ")"]
