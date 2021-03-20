@@ -184,3 +184,5 @@ let print (input : tree) : unit =
 
 print(exp);;
 print(simplify(exp));;
+
+print_2(simplify(exp));;
