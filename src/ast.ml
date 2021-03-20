@@ -9,6 +9,20 @@ type operator =
   | Mult
   | Div
 ;;
+
+let get_order_operator(ope : operator) : int =
+  match ope with
+  | Plus -> 1
+  | Minus -> 1
+  | Mult -> 2
+  | Div -> 2
+;;
+
+(* Si l'opérateur 1 est prioritaire ou égale par rapport à l'opérateur 2, alors on retourne vrai *)
+let operator_priority(ope1, ope2 : operator * operator) : bool =
+  (get_order_operator(ope1) >= get_order_operator(ope2))
+;;
+
 type tree = 
   | Var of char 
   | Cst of int
