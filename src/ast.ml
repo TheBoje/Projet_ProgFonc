@@ -10,6 +10,14 @@ type operator =
   | Div
 ;;
 
+let operator_to_string(op : operator) : string =
+  match op with
+  | Plus -> "+"
+  | Minus -> "-"
+  | Mult -> "*"
+  | Div -> "/"
+;;
+
 (* On met la division prioritaire par rapport à la multiplication à cause de sa non-assossiativité *)
 let get_order_operator(ope : operator) : int =
   match ope with
@@ -134,6 +142,28 @@ let rec simplify (input : tree) : tree =
 
 let exp = parse(string_to_token_list("x 3 + 5 7 + + 3 4 * 1 3 + / /;"));;
 simplify(exp);;
+
+let need_parenthesis(op, branch : operator * tree) : bool =
+  match branch with
+  | Binary(branchOp, _, _) -> operator_priority(op, branchOp)
+  | _ -> false
+;;
+
+let print_2 (input : tree) : unit =
+  let rec aux(input : tree) : string =
+    match input with
+    | Var(value)                -> String.make 1 value
+    | Cst(value)                -> string_of_int(value)
+    | Unary(tree)               -> aux(tree)
+    | Binary(ope, left, right)  ->
+      match (need_parenthesis(ope, left), need_parenthesis(right))
+      | (true, true)    -> String.concat "" ["("; aux(left); ")"; operator_to_string(ope); "("; aux(right); ")"]
+      | (true, false)   -> String.concat "" ["("; aux(left); ")"; operator_to_string(ope); aux(right);]
+      | (false, true)   -> String.concat "" [aux(left); operator_to_string(ope); "("; aux(right); ")"]
+      | (false, false)  -> String.concat "" [aux(left); operator_to_string(ope); aux(right);]
+  in
+  print_string(aux(input))
+;;
 
 let print (input : tree) : unit =
   let rec aux(input : tree) : string =
