@@ -10,12 +10,13 @@ type operator =
   | Div
 ;;
 
+(* On met la division prioritaire par rapport à la multiplication à cause de sa non-assossiativité *)
 let get_order_operator(ope : operator) : int =
   match ope with
   | Plus -> 1
   | Minus -> 1
   | Mult -> 2
-  | Div -> 2
+  | Div -> 3
 ;;
 
 (* Si l'opérateur 1 est prioritaire ou égale par rapport à l'opérateur 2, alors on retourne vrai *)
