@@ -101,6 +101,7 @@ let rec eval(input : tree) : int =
   | Binary(Div, left, right) -> eval(left) / eval(right)
   | Cst(value) -> value
   | Unary(tree) -> (-1)*eval(tree)
+  | Var _ -> failwith "Eval: Cannot evaluate variable"
 ;;
 
 let rec are_same_tree(tree1, tree2 : tree * tree) : bool = 
@@ -149,7 +150,7 @@ let need_parenthesis(op, branch : operator * tree) : bool =
   | _ -> false
 ;;
 
-let print_2 (input : tree) : unit =
+let print(input : tree) : unit =
   let rec aux(input : tree) : string =
     match input with
     | Var(value)                -> String.make 1 value
@@ -165,24 +166,7 @@ let print_2 (input : tree) : unit =
   print_string(aux(input))
 ;;
 
-let print (input : tree) : unit =
-  let rec aux(input : tree) : string =
-    match input with
-    | Var(value) -> String.make 1 value
-    | Cst(value) -> string_of_int(value)
-    | Unary(tree) -> aux(tree)
-    | Binary(ope, left, right) -> 
-      match ope with  
-        | Plus -> String.concat "" [aux(left); "+"; aux(right)]
-        | Minus -> String.concat "" [aux(left); "-"; aux(right)]
-        | Mult -> String.concat "" ["("; aux(left); "*"; aux(right); ")"]
-        | Div -> String.concat "" ["("; aux(left); ")"; "/"; "("; aux(right); ")"]
-  in
-  print_string(aux(input))
-;;
 
 
 print(exp);;
 print(simplify(exp));;
-
-print_2(simplify(exp));;
