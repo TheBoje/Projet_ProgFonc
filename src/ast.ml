@@ -65,14 +65,14 @@ Note : x + y - x -> y n'est pas demandé comme opération de simplification
 
 *)
 
-
-
+(* empile un enracinement binaire sur une pile d'arbre *)
 let token_to_binary_operator_stack(op, stack : operator * tree list) : tree list =
   match stack with
   | [] -> failwith "list is empty"
   | v1::v2::tail -> (Binary(op, v2, v1))::tail
 ;;
 
+(* récupère une liste de token pour retourner un arbre de syntaxe non-simplifé *)
 let parse (input : token list) : tree =
   let rec aux(tk_list, stack : token list * tree list) : tree =
     match tk_list with
@@ -144,6 +144,7 @@ let rec simplify (input : tree) : tree =
 let exp = parse(string_to_token_list("x 3 + 5 7 + + 3 4 * 1 3 + / /;"));;
 simplify(exp);;
 
+(* On regarde si l'opérateur "op" est prioritaire sur l'opérateur de la branche "branch" *)
 let need_parenthesis(op, branch : operator * tree) : bool =
   match branch with
   | Binary(branchOp, _, _) -> operator_priority(op, branchOp)
