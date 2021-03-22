@@ -91,7 +91,7 @@ let parse (input : token list) : tree =
   aux(input, [])
 ;;
 
-let exp = parse(string_to_token_list("13 2 5 *  1 x / - +;"));;
+(*let exp = parse(string_to_token_list("13 2 5 *  1 x / - +;"));;*)
 
 let rec eval(input : tree) : int =
   match input with
@@ -132,17 +132,17 @@ let rec simplify (input : tree) : tree =
     | Binary(Plus, Cst 0, right)  -> simplify(right) (* 0 + x -> x *)
     | Binary(Mult, left, Cst 0)   -> Cst 0 (* x * 0 -> 0 *)
     | Binary(Mult, Cst 0, right)  -> Cst 0 (* 0 * x -> 0 *)
-    | Binary(Minus, left, right) when are_same_tree(left, right) -> Cst 0(* x - x -> 0 *)
-    | Binary(Div, left, right) when are_same_tree(left, right) -> Cst 1 (* x / x -> 1 *)
+    | Binary(Minus, left, right)  when are_same_tree(left, right)  -> Cst 0(* x - x -> 0 *)
+    | Binary(Div, left, right)    when are_same_tree(left, right)  -> Cst 1 (* x / x -> 1 *)
     | Unary(tree)                 -> Unary(simplify(tree))
     | Binary(_, Cst _, Cst _)     -> Cst(eval(input))
-    | Binary(ope, left, right)      -> Binary(ope, simplify(left), simplify(right))
+    | Binary(ope, left, right)    -> Binary(ope, simplify(left), simplify(right))
     | _ -> input
   )
 ;; 
 
-let exp = parse(string_to_token_list("x 3 + 5 7 + + 3 4 * 1 3 + / /;"));;
-simplify(exp);;
+(*let exp = parse(string_to_token_list("x 3 + 5 7 + + 3 4 * 1 3 + / /;"));;
+simplify(exp);;*)
 
 (* On regarde si l'opérateur "op" est prioritaire sur l'opérateur de la branche "branch" *)
 let need_parenthesis(op, branch : operator * tree) : bool =
@@ -169,5 +169,16 @@ let print(input : tree) : unit =
 
 
 
-print(exp);;
-print(simplify(exp));;
+(*print(exp);;
+print(simplify(exp));;*)
+
+let () =
+  if Array.length = 2
+  then 
+  (
+    let exp = parse(string_to_token_list(Sys.argv.(0))) in
+    print(exp);
+    print(simplify(exp));
+  )
+  else failwith "Wrong number of arguments : one arg is needed"
+;;

@@ -1,7 +1,9 @@
 # Projet de Programmation Fonctionnelle
-Enseignants : Mme. Agnès Arnould & Patrice Naudin
+
+Enseignants : Mme. Agnès Arnould & M. Patrice Naudin
 Réalisé par : Vincent Commin & Louis Leenart
 ## Introduction
+
 Ce projet est à réaliser avant le 9 avril 2021, dans le cadre de l'Unité d'Enseignement "Programmation Fonctionnelle". Ce projet porte sur la simplification d'expressions arithmétiques que nous pouvons diviser en 3 parties :
 - Analyse syntaxique et construction de l'arbre
 - Simplification de l'arbre
@@ -11,9 +13,9 @@ Le détail des contraintes imposées est contenu dans le fichier `sujet.pdf` con
 
 # Analyse syntaxique et contruction de l'arbre
 
-Pour la construction de l'arbre, nous nous sommes servi de la notation polonaise inversé (notation postfixe). Celle-ci permet de directement avoir les opérations prioritaires par rapport aux autres. Ainsi `13 2 5 * 1 0 / - +` est la notation postfixée de `13 + 2 * 5 - 1/0`.
+Pour la construction de l'arbre, nous nous sommes servis de la notation polonaise inversé (notation postfixe). Celle-ci permet de directement avoir les opérations prioritaires par rapport aux autres. Ainsi `13 2 5 * 1 0 / - +` est la notation postfixée de `13 + 2 * 5 - 1 / 0`.
 
-Les fonctions prenant en entrée une équation en tant que chaine de caractères et retournant sa version postfixée nous étant déjà fournie, nous avons pu nous concentrer sur le parser `parse(token list) : tree`. Pour chaque nombre de la chaine, il nous suffit de les empiler en tant que type `tree`, et de les dépiler en enracinant l'arbre à chaque opération (addition, soustraction, multiplication, division et le moins).
+Les fonctions prenant en entrée une équation en tant que chaine de caractères et retournant sa version postfixée nous étant déjà fourni, nous avons pu nous concentrer sur le parser `parse(token list) : tree`. Pour chaque nombre de la chaine, il nous suffit de les empiler en tant que type `tree`, et de les dépiler en enracinant l'arbre à chaque opération (addition, soustraction, multiplication, division et le moins).
 
 # Simplification de l'arbre
 Pour simplifier l'expression arithmétique créée à partir de l'AST, nous avons appliqué un pattern matching pour les opératios de simplication basiques. En effet, la simplification de `x * 0`, `x + 1` ou `x - x` sont évidentes.
@@ -29,5 +31,7 @@ On note que nous n'avons pas mis en place toutes les opérations de simplificati
 - Evaluation de sous-arbre composé uniquement de constantes
 
 # Affichage du résultat
+
+Pour l'affichage de l'arbre, il nous suffit de parcourir l'arbre en mode infixe et d'afficher chaque noeuds. Cependant, nous avons rencontré un problème. Si nous voulons afficher l'équation avec la bonne priorité pour les opérateurs, il faudrait sur-parenthéser l'équation ce qui devient très vite indigeste. C'est pour cela qu'à chaque fois que nous allons afficher un opérateur, on vérifie si celui-ci est prioritaire par rapport à ses fils. S'il est prioritaire, alors il faudra afficher le fils entre parenthèses.
 
 # Utilisation de notre programme
