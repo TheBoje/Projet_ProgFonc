@@ -76,6 +76,7 @@ let token_to_binary_operator_stack(op, stack : operator * tree list) : tree list
   | [] -> failwith "list is empty"
   | v1::v2::tail -> (Binary(op, v2, v1))::tail
 ;;
+(* FIXME: Warning 8: this pattern-matching is not exhaustive *)
 
 
 (* 
@@ -114,16 +115,15 @@ let parse (input : token list) : tree =
       | Variable(var) -> aux(tail, Var(var)::stack)
       (* Opérateur unaire -> la tête de liste est une constante ou variable donc on la remplace par un opérateur unaire sur la tête de la liste *)
       | Minus         -> aux(tail, Unary(List.hd(stack))::(List.tl(stack))) 
-      | Add           -> aux(tail, token_to_binary_operator_stack(Plus, stack))
+      | Add           -> aux(tail, token_to_binary_operator_stack(Plus,  stack))
       | Subtract      -> aux(tail, token_to_binary_operator_stack(Minus, stack))
-      | Multiply      -> aux(tail, token_to_binary_operator_stack(Mult, stack))
-      | Divide        -> aux(tail, token_to_binary_operator_stack(Div, stack))
+      | Multiply      -> aux(tail, token_to_binary_operator_stack(Mult,  stack))
+      | Divide        -> aux(tail, token_to_binary_operator_stack(Div,   stack))
   in
   aux(input, [])
 ;;
 
 (*
-  Test :
   let exp = parse(string_to_token_list("13 2 5 *  1 x / - +;"));;
 *)
 
@@ -136,10 +136,10 @@ let parse (input : token list) : tree =
 *)
 let rec eval(input : tree) : int =
   match input with
-  | Binary(Plus, left, right)   -> eval(left) + eval(right) (* Opérateurs binaires *)
-  | Binary(Minus, left, right)  -> eval(left) - eval(right)
-  | Binary(Mult, left, right)   -> eval(left) * eval(right)
-  | Binary(Div, left, right)    -> eval(left) / eval(right)
+  | Binary(Plus,  left, right)   -> eval(left) + eval(right) (* Opérateurs binaires *)
+  | Binary(Minus, left, right)   -> eval(left) - eval(right)
+  | Binary(Mult,  left, right)   -> eval(left) * eval(right)
+  | Binary(Div,   left, right)   -> eval(left) / eval(right)
   | Cst(value)  -> value
   | Unary(tree) -> (-1)*eval(tree)
   | Var _       -> failwith "Eval: Cannot evaluate variable"
@@ -164,8 +164,8 @@ let rec simplify (input : tree) : tree =
     | Binary(Plus, Cst 0, right)  -> simplify(right)  (* 0 + x -> x *)
     | Binary(Mult, left, Cst 0)   -> Cst 0            (* x * 0 -> 0 *)
     | Binary(Mult, Cst 0, right)  -> Cst 0            (* 0 * x -> 0 *)
-    | Binary(Minus, left, right)  when left = right -> Cst 0  (* x - x -> 0 *)
-    | Binary(Div, left, right)    when left = right -> Cst 1  (* x / x -> 1 *)
+    | Binary(Minus, left, right)     when left = right -> Cst 0  (* x - x -> 0 *)
+    | Binary(Div, left, right)       when left = right -> Cst 1  (* x / x -> 1 *)
     | Unary(tree)                 -> Unary(simplify(tree))    
     | Binary(ope, left, right)    -> Binary(ope, simplify(left), simplify(right)) (* Aucun des patternes de simplification n'est trouvé, on tente de simplifier les sous arbres *)
     | _ -> input  (* Cas de Cst et Var *)
@@ -173,7 +173,6 @@ let rec simplify (input : tree) : tree =
 ;; 
 
 (* 
-  Test: 
   let exp = parse(string_to_token_list("x 3 + 5 7 + + 3 4 * 1 3 + / /;"));;
   simplify(exp);;
 *)
@@ -194,15 +193,15 @@ let rec simplify (input : tree) : tree =
 let print(input : tree) : unit =
   let rec aux(input : tree) : string =
     match input with
-    | Var(value)                -> String.make 1 value
+    | Var(value)                -> Char.escaped value
     | Cst(value)                -> string_of_int(value)
-    | Unary(tree)               -> aux(tree)
+    | Unary(tree)               -> "-" ^ aux(tree)
     | Binary(ope, left, right)  ->
       match (need_parenthesis(ope, left), need_parenthesis(ope, right)) with
-      | (true, true)    -> String.concat "" ["("; aux(left); ")"; operator_to_string(ope); "("; aux(right); ")"]
-      | (true, false)   -> String.concat "" ["("; aux(left); ")"; operator_to_string(ope); aux(right);]
-      | (false, true)   -> String.concat "" [aux(left); operator_to_string(ope); "("; aux(right); ")"]
-      | (false, false)  -> String.concat "" [aux(left); operator_to_string(ope); aux(right);]
+      | (true, true)    -> "(" ^ aux(left) ^ ")" ^ operator_to_string(ope) ^ "(" ^ aux(right) ^ ")"
+      | (true, false)   -> "(" ^ aux(left) ^ ")" ^ operator_to_string(ope) ^       aux(right)
+      | (false, true)   ->       aux(left) ^       operator_to_string(ope) ^ "(" ^ aux(right) ^ ")"
+      | (false, false)  ->       aux(left) ^       operator_to_string(ope) ^       aux(right)
   in
   print_string(aux(input))
 ;;
@@ -210,7 +209,6 @@ let print(input : tree) : unit =
 
 
 (*
-  Test :
   print(exp);;
   print(simplify(exp));;
 *)
