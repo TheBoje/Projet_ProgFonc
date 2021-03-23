@@ -34,4 +34,27 @@ On note que nous n'avons pas mis en place toutes les opérations de simplificati
 
 Pour l'affichage de l'arbre, il nous suffit de parcourir l'arbre en mode infixe et d'afficher chaque noeuds. Cependant, nous avons rencontré un problème. Si nous voulons afficher l'équation avec la bonne priorité pour les opérateurs, il faudrait sur-parenthéser l'équation ce qui devient très vite indigeste. C'est pour cela qu'à chaque fois que nous allons afficher un opérateur, on vérifie si celui-ci est prioritaire par rapport à ses fils. S'il est prioritaire, alors il faudra afficher le fils entre parenthèses.
 
-# Utilisation de notre programme
+# Utilisation de notre module
+
+## Lancement
+Pour lancer le programme, il suffit de lancer l'executable `ast` puis en entrant l'expression en notation postfixée dans la console, ou alors en effectuant une redirection.
+```bash
+./ast < input
+```
+On note que l'entrée doit contenir l'expression postfixée et doit se terminer par un **";"**.
+Par exemple, pour l'entrée de l'expression `x 3 + 5 7 + + 3 4 * 1 3 + / /;`, le résultat est :
+```
+Expression: (x+3+5+7)/(3*4)/(1+3)
+Après simplification: (x+3+12)/3
+```
+
+## Compilation
+La compilation de notre module se fait via le fichier `compile.sh` présent dans le dossier `src`. Lancez alors ce fichier avec la commande suivante. 
+```bash
+bash compile.sh
+```
+Si vous utilisez un programme autre, ou que vous rencontrez des problèmes, nous utilisons la commande suivante pour compiler.
+```bash
+ocamlc expression_scanner.cmo ast.ml -o ast
+```
+La version d'Ocaml utilisée est `Ocaml 4.08.1`, si la votre est différente, remplacer le module `expression_scanner` par la version appropriée.
