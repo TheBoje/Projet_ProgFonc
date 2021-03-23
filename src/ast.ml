@@ -14,10 +14,10 @@
 (* ================================================== *)
 (* ================== IMPORTATIONS ================== *)
 (* ================================================== *)
-
+(*
 #directory "../data";;
 #load "expression_scanner.cmo";;
-
+*)
 open Expression_scanner;;
 
 (* ================================================== *)
@@ -75,8 +75,8 @@ let token_to_binary_operator_stack(op, stack : operator * tree list) : tree list
   match stack with
   | [] -> failwith "list is empty"
   | v1::v2::tail -> (Binary(op, v2, v1))::tail
+  | _  -> failwith "Error input: postfix expression needed" 
 ;;
-(* FIXME: Warning 8: this pattern-matching is not exhaustive *)
 
 
 (* 
@@ -219,10 +219,9 @@ let print(input : tree) : unit =
 
 (* Récupération de l'input en tant qu'argument *)
 let () =
-  if Array.length Sys.argv = 2
-  then 
-  (
-    let exp = parse(string_to_token_list(Sys.argv.(0))) in
-    print(exp);
-    print(simplify(exp));
-  )
+  let exp = parse(input_to_token_list()) in
+  Printf.printf("Expression: ");
+  print(exp);
+  Printf.printf("\nAprès simplification: ");
+  print(simplify(exp));
+  Printf.printf("\n");
