@@ -88,7 +88,10 @@ let rec is_cst_tree(input : tree) : bool =
 ;;
 
 
-(* On regarde si l'opérateur "op" est prioritaire sur l'opérateur de la branche "branch" *)
+(* 
+  On regarde si l'opérateur "op" est prioritaire sur l'opérateur de la branche
+  "branch" 
+*)
 let need_parenthesis(op, branch : operator * tree) : bool =
   match branch with
   | Binary(branchOp, _, _) -> operator_priority(op, branchOp)
@@ -100,7 +103,9 @@ let need_parenthesis(op, branch : operator * tree) : bool =
 (* =========== OPÉRATIONS PRINCIPALES AST =========== *)
 (* ================================================== *)
 
-(* récupère une liste de token pour retourner un arbre de syntaxe non-simplifé *)
+(* 
+  Récupère une liste de token pour retourner un arbre de syntaxe non-simplifé 
+*)
 let parse (input : token list) : tree =
   let rec aux(tk_list, stack : token list * tree list) : tree =
     match tk_list with

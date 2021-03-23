@@ -9,7 +9,7 @@ Ce projet est à réaliser avant le 9 avril 2021, dans le cadre de l'Unité d'En
 - Simplification de l'arbre
 - Affichage du résultat
 
-Le détail des contraintes imposées est contenu dans le fichier `sujet.pdf` contenu dans la racine.
+Le détail des contraintes imposées est contenu dans le fichier `sujet.pdf` contenu dans la racine. L'ensemble des fichiers sources sont contenus dans le dossier `src`.
 
 # Analyse syntaxique et contruction de l'arbre
 
@@ -32,24 +32,24 @@ On note que nous n'avons pas mis en place toutes les opérations de simplificati
 
 # Affichage du résultat
 
-Pour l'affichage de l'arbre, il nous suffit de parcourir l'arbre en mode infixe et d'afficher chaque noeuds. Cependant, nous avons rencontré un problème. Si nous voulons afficher l'équation avec la bonne priorité pour les opérateurs, il faudrait sur-parenthéser l'équation ce qui devient très vite indigeste. C'est pour cela qu'à chaque fois que nous allons afficher un opérateur, on vérifie si celui-ci est prioritaire par rapport à ses fils. S'il est prioritaire, alors il faudra afficher le fils entre parenthèses.
+Pour l'affichage de l'arbre, il nous suffit de parcourir l'arbre en mode infixe et d'afficher chaque noeud. Cependant, nous avons rencontré un problème. Si nous voulons afficher l'équation avec la bonne priorité pour les opérateurs, il faudrait sur-parenthéser l'équation ce qui devient très vite indigeste. C'est pour cela qu'à chaque fois que nous allons afficher un opérateur, on vérifie si celui-ci est prioritaire par rapport à ses fils. S'il est prioritaire, alors il faudra afficher le fils entre parenthèses.
 
 # Utilisation de notre module
 
 ## Lancement
-Pour lancer le programme, il suffit de lancer l'executable `ast` puis en entrant l'expression en notation postfixée dans la console, ou alors en effectuant une redirection.
+Pour lancer le programme, il suffit de lancer l'exécutable `ast` puis en entrant l'expression en notation postfixée dans la console, ou alors en effectuant une redirection.
 ```bash
 ./ast < input
 ```
 On note que l'entrée doit contenir l'expression postfixée et doit se terminer par un **";"**.
-Par exemple, pour l'entrée de l'expression `x 3 + 5 7 + + 3 4 * 1 3 + / /;`, le résultat est :
+Par exemple, pour l'entrée `x 3 + 5 7 + + 3 4 * 1 3 + / /;`, le résultat est :
 ```
 Expression: (x+3+5+7)/(3*4)/(1+3)
 Après simplification: (x+3+12)/3
 ```
 
 ## Compilation
-La compilation de notre module se fait via le fichier `compile.sh` présent dans le dossier `src`. Lancez alors ce fichier avec la commande suivante. 
+La compilation de notre exécutable se fait via le fichier `compile.sh` présent dans le dossier `src`. Lancez alors ce fichier avec la commande suivante. 
 ```bash
 bash compile.sh
 ```
