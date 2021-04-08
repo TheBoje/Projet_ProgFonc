@@ -197,7 +197,10 @@ let print(input : tree) : unit =
     match input with
     | Var(value)                -> Char.escaped value
     | Cst(value)                -> string_of_int(value)
-    | Unary(tree)               -> "-" ^ aux(tree)
+    | Unary(tree)               ->
+	  match tree with
+	  | Binary  				-> "-(" ^ aux(tree) ^ ")"
+	  | _ 						-> "(-" ^ aux(tree) ^ ")"
     | Binary(ope, left, right)  ->
       match (need_parenthesis(ope, left), need_parenthesis(ope, right)) with
       | (true, true)    -> "(" ^ aux(left) ^ ")" ^ operator_to_string(ope) ^ "(" ^ aux(right) ^ ")"
